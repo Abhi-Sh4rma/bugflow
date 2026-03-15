@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import engine, Base
 from app.models import user, scan
-from app.api.routes import auth
+from app.api.routes import auth, scans
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -22,6 +22,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(scans.router, prefix="/api/v1")
 
 @app.on_event("startup")
 async def startup():
