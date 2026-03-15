@@ -1,3 +1,5 @@
+import asyncio
+from app.services.scan_runner import run_scan_pipeline
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -53,6 +55,8 @@ async def create_scan(
     db.add(new_scan)
     await db.commit()
     await db.refresh(new_scan)
+    # Trigger scan pipeline in background
+    asyncio.create_task(run_scan_pipeline(new_scan.id, new_scan.domain))
     return new_scan
 
 @router.get("", response_model=List[ScanSummary])
